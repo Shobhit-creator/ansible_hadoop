@@ -1,0 +1,36 @@
+- hosts: all
+  tasks:
+  - get_url:
+          url: "https://archive.apache.org/dist/hadoop/core/hadoop-1.2.1/hadoop-1.2.1-1.i386.rpm"
+          dest: "/home/ec2-user/"
+  - command: "rpm -ivh hadoop-1.2.1-1.i386.rpm --force"
+  - copy:
+          dest: "/home/ec2-user/"
+          src: "/home/ec2-user/"
+  - command: "rpm -ivh jdk-8u171-linux-x64.rpm --force"
+- hosts: name
+  tasks:
+  - file:
+          path: "/nn"
+          state: directory
+
+  - copy:
+          dest: "/etc/hadoop/"
+          src: "/etc/hadoop/hdfs-site.xml"
+  - copy:
+          dest: "/etc/hadoop/"
+          src: "/etc/hadoop/core-site.xml"
+  - command: "hadoop namenode -format -force"
+  - command: "hadoop-daemon.sh start namenode"
+- hosts: data
+  tasks:
+  - file:
+          path: "/dn"
+          state: directory
+  - template:
+          dest: "/etc/hadoop/"
+          src: "hdfs-site.xml"
+  - copy:
+          dest: "/etc/hadoop/"
+          src: "core-site.xml"
+  - command: "hadoop-daemon.sh start datanode"
